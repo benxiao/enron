@@ -1,7 +1,7 @@
-import subprocess
-import os
 import json
+import os
 import string
+import subprocess
 
 from nltk.tokenize import sent_tokenize
 
@@ -14,11 +14,11 @@ DUMMY = '654321'
 TEMP_FILE_NAME = 'parseface_tmpface.tmp'
 FIRST = 0
 
-def _is_dummy(sent):
+def is_dummy(sent):
     return len(sent) == 1 and sent[FIRST][0] == DUMMY
 
 
-def _to_sents_with_dummy(lst_document):
+def insert_dummies(lst_document):
     lst_sent = []
     for document in lst_document:
         for sent in sent_tokenize(document):
@@ -31,13 +31,13 @@ def _to_sents_with_dummy(lst_document):
     return lst_sent
 
 
-def _to_documents_from(sents):
+def sents2docs(sents):
     i, l = 0, len(sents)
     result = []
     temp = []
     while i < l:
         sent = sents[i]
-        if not _is_dummy(sent):
+        if not is_dummy(sent):
             temp.extend(sent)
         else:
             result.append(temp)
@@ -46,7 +46,7 @@ def _to_documents_from(sents):
     return result
 
 
-def _get_tuples_from_table(text):
+def tbl2tuples(text):
     result = []
     lines = text.split('\n')
     for line in lines:
@@ -77,7 +77,7 @@ def pos_tag(text, verbose=False):
         # replace '\n' with ' ' in the each string
         text = [t.replace('\n', ' ') for t in text]
         # put dummy between sents of separate documents so later the sents can be separated
-        lst_sent = _to_sents_with_dummy(text)
+        lst_sent = insert_dummies(text)
         text = '\n'.join(lst_sent)
         single = False
 
@@ -115,12 +115,12 @@ def pos_tag(text, verbose=False):
     if i < len(command_result):
         chunks.append(command_result[i:])
 
-    sents = [_get_tuples_from_table(x) for x in chunks]
+    sents = [tbl2tuples(x) for x in chunks]
     if single:
         return sents[0]
 
     # merge sents into documents
-    return _to_documents_from(sents)
+    return sents2docs(sents)
 
 if __name__ == '__main__':
     lst_document = json.load(open('emails.json'))
