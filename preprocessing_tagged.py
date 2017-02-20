@@ -16,7 +16,7 @@ from nltk.stem import WordNetLemmatizer
 # Constants
 NOUN_TYPES = ('NN','NNS','NNP','NNPS')
 PLURAL_NOUN_TYPES = ('NNS', 'NNPS')
-DATA_PATH = '/Users/ranxiao/Desktop/data/arXiv'
+DATA_PATH = '../data/enron/tagged'
 REMOVED = ['www', 'http', 'com']
 
 
@@ -31,14 +31,13 @@ def predoc(tagged):
     :param text:
     :return:
     """
-    sent_components = [(lemmatizer.lemmatize(w), t) if t in NOUN_TYPES else (w, t) for (w, t) in tagged]
+    sent_components = [(lemmatizer.lemmatize(w), t) if t in PLURAL_NOUN_TYPES else (w, t) for (w, t) in tagged]
     # merge
     sent_components = merge_components(sent_components)
     # get only nouns
     nouns = [w for w, t in sent_components if t in NOUN_TYPES]
-    result.extend(nouns)
     # get lower
-    return [x.lower() for x in result]
+    return [x.lower() for x in nouns]
 
 
 def find_ngrams(lst_str, threshold=0.2, minimum=10):
@@ -122,10 +121,10 @@ if __name__ == '__main__':
     # create processing pool
     pool = Pool(cpu_count())
 
-    for i in range(2000, 2002):
+    for i in range(2000, 2001):
         for j in range(1, 13):
             print('processing {}...'.format((i,j)))
-            raw = json.load(open('enron_{}_{}'.format(i, j)))
+            raw = json.load(open(DATA_PATH+'/tagged_{}_{}.json'.format(i, j)))
             lst_lst_nouns = pool.map(predoc, raw)
             lst_nouns = [x for l in lst_lst_nouns for x in l]
             n_grams = find_ngrams(lst_nouns)

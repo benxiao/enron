@@ -8,7 +8,7 @@ data = {
 
 data2 = [[1,2,3,4], [4,5,6,7]]
 
-df = DataFrame(data, columns=['b', 'a']) # garantee the order of the columns
+df = DataFrame(data, columns=['b', 'a']) # guarantee the order of the columns
 print(df)
 
 df2 = DataFrame(data2,columns=['a', 'c', 'b', 'd'])

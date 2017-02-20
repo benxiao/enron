@@ -1,6 +1,9 @@
 from gensim.models.wrappers.ldamallet import LdaMallet
 import json
 
+DATA_PATH = '../data/enron'
+
+
 result = []
 for y in [2000, 2001]:
     for m in range(1, 13):
